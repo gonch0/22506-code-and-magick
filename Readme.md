@@ -1,7 +1,7 @@
 # Учебный проект «Код и Магия» [![Build status][travis-image]][travis-url]
 
 * Студент: [Иван Гончаров](https://up.htmlacademy.ru/javascript/16/user/22506).
-* Наставник: `Неизвестно`.
+* Наставник: [Артем Черкасов](https://up.htmlacademy.ru/javascript/16/user/530727).
 
 ---
 
