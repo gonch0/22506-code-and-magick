@@ -41,6 +41,7 @@ var openPopup = function() {
 var closePopup = function() {
   setup.classList.add('hidden');
   document.removeEventListener('keydown', onPopupEscPress);
+  setup.style = '';
 };
 
 var fillElement = function (element, input, colors) {
@@ -72,7 +73,7 @@ setupClose.addEventListener('keydown', function(evt) {
 
 userNameInput.addEventListener('invalid', function(evt) {
   if (userNameInput.validity.valueMissing) {
-    userNameInput.setCustomValidity('Обязательное полев');
+    userNameInput.setCustomValidity('Обязательное поле');
   } else {
     userNameInput.setCustomValidity('');
   }
