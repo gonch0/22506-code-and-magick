@@ -2,14 +2,6 @@
 
 
 (function () {
-  /*var WIZARD = {
-    names: ['Иван', 'Хуан Себастьян', 'Мария', 'Кристоф', 'Виктор', 'Юлия', 'Люпита', 'Вашингтон'],
-    surnames: ['да Марья', 'Верон', 'Мирабелла', 'Вальц', 'Онопко', 'Топольницкая', 'Нионго', 'Ирвинг'],
-    coats: ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161)', 'rgb(56, 159, 117)', 'rgb(215, 210, 55)', 'rgb(0, 0, 0)'],
-    eyes: ['black', 'red', 'blue', 'yellow', 'green'],
-    fireball: ['#ee4830', '#30a8ee','#5ce6c0', '#e848d5', '#e6e848'],
-  };*/
-
 
   var ESC_KEYCODE = 27;
   var ENTER_KEYCODE = 13;
@@ -22,11 +14,7 @@
 
   var wizardCoatInput = document.querySelector('input[name="coat-color"]');
   var wizardEyesInput = document.querySelector('input[name="eyes-color"]');
-  var wizardFireballInput = document.querySelector('input[name="fireball-color"]');
 
-  var wizardCoat = document.querySelector('.wizard-coat');
-  var wizardEyes = document.querySelector('.wizard-eyes');
-  var wizardFireball = document.querySelector('.setup-fireball-wrap');
 
   var getRandomInt = function (min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
@@ -86,14 +74,56 @@
   });
 
 
+  // Модуль 7
 
-  var similarListElement = document.querySelector('.setup-similar-list');
-  var similarWizardTemplate = document.querySelector('#similar-wizard-template')
-      .content
-      .querySelector('.setup-similar-item');
+  var wizards = [];
+  var coatColor;
+  var eyesColor;
 
-  // Модуль 6
-  window.wizards = [];
+  var getRank = function (wizard) {
+    var rank = 0;
+
+    if (wizard.colorCoat === coatColor) {
+      rank += 2;
+    }
+    if (wizard.colorEyes === eyesColor) {
+      rank += 1;
+    }
+
+    return rank;
+  };
+
+  var namesComparator = function (left, right) {
+    if (left > right) {
+      return 1;
+    } else if (left < right) {
+      return -1;
+    } else {
+      return 0;
+    }
+  };
+
+
+  var updateWizards = function () {
+    window.render(wizards.sort(function (left, right) {
+      var rankDiff = getRank(right) - getRank(left);
+      if (rankDiff === 0) {
+        rankDiff = namesComparator(left.name, right.name);
+      }
+      return rankDiff;
+    }));
+  };
+
+  window.wizard.onEyesChange = window.debounce(function (color) {
+    eyesColor = color;
+    updateWizards();
+  });
+
+  window.wizard.onCoatChange = window.debounce(function (color) {
+    coatColor = color;
+    updateWizards();
+  });
+
   var errorClose = document.querySelector('.error-close');
   var errorMessage = document.querySelector('.error');
 
@@ -113,57 +143,12 @@
   };
 
   //Загрузка данных с сервера
-  var onLoad = function (wizards) {
-
-    var wizardsColors = {
-      coats: [],
-      eyes: [],
-      fireballs: []
-    };
-
-    var fragment = document.createDocumentFragment();
-    for (var i = 0; i < 5; i++) {
-      var randomNum = getRandomInt (0, wizards.length);
-      fragment.appendChild(renderWizard(wizards[randomNum]));
-
-      wizardsColors.coats.push(wizards[randomNum].colorCoat);
-      wizardsColors.eyes.push(wizards[randomNum].colorEyes);
-      wizardsColors.fireballs.push(wizards[randomNum].colorFireball);
-
-    }
-
-    similarListElement.appendChild(fragment);
-    document.querySelector('.setup-similar').classList.remove('hidden');
-
-
-    //Обработчики нажатий по параметрам волшебников
-    wizardCoat.addEventListener('click', function() {
-      fillElement(wizardCoat, wizardCoatInput, wizardsColors.coats);
-    });
-
-    wizardEyes.addEventListener('click', function() {
-      fillElement(wizardEyes, wizardEyesInput, wizardsColors.eyes);
-    });
-
-    wizardFireball.addEventListener('click', function() {
-      fillElement(wizardFireball, wizardFireballInput, wizardsColors.fireballs);
-    });
-
-
+  var onLoad = function (data) {
+    wizards = data;
+    updateWizards();
   };
 
   window.load('https://js.dump.academy/code-and-magick/data', onLoad, onError);
-
-
-
-  var renderWizard = function (wizard) {
-    var wizardElement = similarWizardTemplate.cloneNode(true);
-
-    wizardElement.querySelector('.setup-similar-label').textContent = wizard.name;
-    wizardElement.querySelector('.wizard-coat').style.fill = wizard.colorCoat;
-    wizardElement.querySelector('.wizard-eyes').style.fill = wizard.colorEyes;
-    return wizardElement;
-  }
 
 
   //Отправка данных на сервер
